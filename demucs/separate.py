@@ -146,12 +146,11 @@ def main(opts=None):
 
     model.cpu()
     model.eval()
-
     if args.stem is not None and args.stem not in model.sources:
         fatal(
             'error: stem "{stem}" is not in selected model. STEM must be one of {sources}.'.format(
                 stem=args.stem, sources=', '.join(model.sources)))
-    out = args.out / args.name
+    out = args.out # removes model name from output path
     out.mkdir(parents=True, exist_ok=True)
     print(f"Separated tracks will be stored in {out.resolve()}")
     for track in args.tracks:
@@ -167,6 +166,7 @@ def main(opts=None):
         ref = wav.mean(0)
         wav -= ref.mean()
         wav /= ref.std()
+        # have to do this because demucs expects to separate all 4 sources
         sources = apply_model(model, wav[None], device=args.device, shifts=args.shifts,
                               split=args.split, overlap=args.overlap, progress=True,
                               num_workers=args.jobs, segment=args.segment)[0]
@@ -186,6 +186,9 @@ def main(opts=None):
             'as_float': args.float32,
             'bits_per_sample': 24 if args.int24 else 16,
         }
+        # only need bass and drums now but note that there's no speedup from doing this
+        # since demucs still separates all 4 sources
+        model.sources = ['drums', 'bass']
         if args.stem is None:
             for source, name in zip(sources, model.sources):
                 stem = out / args.filename.format(track=track.name.rsplit(".", 1)[0],
