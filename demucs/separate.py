@@ -56,6 +56,7 @@ def get_parser():
     parser.add_argument("tracks", nargs='+', type=Path, default=[], help='Path to tracks')
     add_model_flags(parser)
     parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument("-st", "--stream", help="Return wav data instead of saving to disk")
     parser.add_argument("-o",
                         "--out",
                         type=Path,
@@ -151,8 +152,13 @@ def main(opts=None):
             'error: stem "{stem}" is not in selected model. STEM must be one of {sources}.'.format(
                 stem=args.stem, sources=', '.join(model.sources)))
     out = args.out # removes model name from output path
-    out.mkdir(parents=True, exist_ok=True)
-    print(f"Separated tracks will be stored in {out.resolve()}")
+    if args.stream:
+        save_data = True
+        print("Results will be returned instead of saved to disk.")
+    else:
+        out.mkdir(parents=True, exist_ok=True)
+        save_data = False
+        print(f"Separated tracks will be stored in {out.resolve()}")
     for track in args.tracks:
         if not track.exists():
             print(
@@ -195,6 +201,8 @@ def main(opts=None):
                                                   trackext=track.name.rsplit(".", 1)[-1],
                                                   stem=name, ext=ext)
                 stem.parent.mkdir(parents=True, exist_ok=True)
+                if save_data:
+                    return save_audio(source, None, **kwargs)
                 save_audio(source, str(stem), **kwargs)
         else:
             sources = list(sources)

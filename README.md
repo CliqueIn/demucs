@@ -1,11 +1,16 @@
 # Demucs Music Source Separation
 
-
 This is a fork of Demucs (v4), featuring Hybrid Transformer based source separation.
 
-Current change is just removing the model name as a subdirectory of the output folder and changing the model source to drums and bass only (note if you mess with the specific source order, you will mess up the ouput be careful!). This is done after separation for now since the demucs expects all four (bass, drums, vocals, other) when the model is applied so there are not performance gains.
+Current change:
+- removes the model name as a subdirectory of the output folder
+- changes the model source to drums and bass only (note if you mess with the specific source order, you will mess up the ouput be careful!). This is done after separation for now since the demucs expects all four (bass, drums, vocals, other) when the model is applied so there are not performance gains
+- adds argument option ```--stream```. This returns a dictionary containing the tensor source, sample rate, encoding, and bits_per_sample. 
 
-Any updates to the source code should be done in ```demucs/```. After any updates run ```python3 setup.py build``` to build the changes and ```python3 setup.py install``` to install them. You can run this fork the same as the master. 
+**Editing**:
+First, create a python environment. Any updates to the source code should be done in ```demucs/```. After any updates run ```python3 setup.py build``` to build the changes and ```python3 setup.py install``` to install them. You can run this fork the same as the master. 
+
+---
 
 **For the classic Hybrid Demucs (v3):** [Go this commit][demucs_v3].
 If you are experiencing issues and want the old Demucs back, please fill an issue, and then you can get back to the v3 with

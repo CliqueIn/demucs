@@ -245,8 +245,11 @@ def save_audio(wav: torch.Tensor,
     will save as mp3 with the given `bitrate`.
     """
     wav = prevent_clip(wav, mode=clip)
-    path = Path(path)
-    suffix = path.suffix.lower()
+    if path is not None:
+        path = Path(path)
+        suffix = path.suffix.lower()
+    else:
+        suffix = '.wav'
     if suffix == ".mp3":
         encode_mp3(wav, path, samplerate, bitrate, verbose=True)
     elif suffix == ".wav":
@@ -255,8 +258,8 @@ def save_audio(wav: torch.Tensor,
             encoding = 'PCM_F'
         else:
             encoding = 'PCM_S'
-        ta.save(str(path), wav, sample_rate=samplerate,
-                encoding=encoding, bits_per_sample=bits_per_sample)
+        return {'source': wav, 'sr': samplerate,
+                'encoding': encoding, 'bits_per_sample': bits_per_sample}
     elif suffix == ".flac":
         ta.save(str(path), wav, sample_rate=samplerate, bits_per_sample=bits_per_sample)
     else:
