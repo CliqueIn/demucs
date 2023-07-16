@@ -1,7 +1,7 @@
 from demucs import separate
 import torchaudio
 
-data = separate.main(['latindb1.wav', "--out='songs'", '-st=True'])
+data = separate.main(['latindb1.wav', "--out='songs'"])
 if data:
     print(data)
     source, sr, encoding, bits_per_sample =  data['source'], data['sr'], data['encoding'], data['bits_per_sample']
