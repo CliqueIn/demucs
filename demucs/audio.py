@@ -15,7 +15,7 @@ import torchaudio as ta
 import typing as tp
 
 from .utils import temp_filenames
-
+import io
 
 def _read_info(path):
     stdout_data = sp.check_output([
@@ -262,7 +262,10 @@ def save_audio(wav: torch.Tensor,
             encoding = 'PCM_S'
         if return_data:
             print("Returning data...")
-            return {'source': wav, 'sr': samplerate,
+            buffer = io.BytesIO()
+            ta.save(buffer, wav, sample_rate=samplerate, bits_per_sample=bits_per_sample, encoding=encoding, format='wav')
+            buffer.seek(0)
+            return {'source': buffer, 'sr': samplerate,
                     'encoding': encoding, 'bits_per_sample': bits_per_sample}
         else:
             ta.save(str(path), wav, sample_rate=samplerate, bits_per_sample=bits_per_sample, encoding=encoding)
